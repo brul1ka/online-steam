@@ -19,11 +19,13 @@ while True:
     if game_name.lower() == "exit":
         break
 
+    # getting appid by app name
     appid = find_appid(apps, game_name)
     if appid is None:
         print("Game not found.")
         continue
 
+    # getting the number of players at the moment
     try:
         url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={appid}"
         response = requests.get(url)
@@ -33,6 +35,6 @@ while True:
         if player_count is not None:
             print(f"Current number of players for {game_name}: {player_count}")
         else:
-            print("Could not retrieve the player count.")
+            print("Could not retrieve the player count. Maybe, the game isn't released")
     except Exception as e:
         print("An error occurred while retrieving data:", e)
