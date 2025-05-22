@@ -1,1 +1,1 @@
-# Steam Player Counter (SPC)
+# Steam Player Counter
