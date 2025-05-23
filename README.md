@@ -1,18 +1,26 @@
-# Online Steam Tracker
+# Online Steam Tracker APK
 
-Online Steam Tracker is a minimal desktop application that shows which Steam games are currently online and being played. It is designed for simplicity, speed, and usability.
+**Online Steam Tracker** is a simple Android app that shows which Steam games are currently online and being played. The app is built with Python using Kivy and packaged as an APK using Buildozer.
 
 ## Features
 
-- View trending online games on Steam in real-time
-- Simple, clean terminal interface
-- Built with Python 3.10 and libraries like `requests`, `rich`, and `buildozer`
-- Lightweight and supports building for Android (using Kivy)
+- Displays real-time online player counts for popular Steam games  
+- Clean and minimalistic user interface designed for mobile devices  
+- Built with Python 3.10 and Kivy framework  
+- Easy to install on Android devices as APK  
 
 ## Installation
 
-### 1. Clone the repository
+1. Download the latest APK from the [Releases](https://github.com/brul1ka/online-steam/releases) page (if available).  
+2. Enable installation from unknown sources on your Android device.  
+3. Install the APK and run the app.
 
-```bash
-git clone https://github.com/brul1ka/online-steam.git
-cd online-steam
+## Build from Source
+
+If you want to build the APK yourself:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/brul1ka/online-steam.git
+   cd online-steam
