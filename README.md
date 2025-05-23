@@ -1,32 +1,18 @@
-# Online Steam
+# Online Steam Tracker
 
-A simple Python app that shows how many people are currently playing a specific Steam game — using data from SteamDB.
+Online Steam Tracker is a minimal desktop application that shows which Steam games are currently online and being played. It is designed for simplicity, speed, and usability.
 
 ## Features
 
-- Search for any game available on Steam
-- See how many players are online right now
-- Terminal and GUI versions available (GUI with Kivy)
-- Fast and lightweight
-
-## Screenshots
-
-### Terminal Version
-
-![Terminal Screenshot](screenshots/Screenshot1.png)
-
-### GUI Version
-
-![GUI Screenshot](screenshots/Screenshot2.png)
+- View trending online games on Steam in real-time
+- Simple, clean terminal interface
+- Built with Python 3.10 and libraries like `requests`, `rich`, and `buildozer`
+- Lightweight and supports building for Android (using Kivy)
 
 ## Installation
 
-### Requirements
-
-- Python 3.10+
-- pip
-
-### Install dependencies
+### 1. Clone the repository
 
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/brul1ka/online-steam.git
+cd online-steam
