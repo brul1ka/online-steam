@@ -14,13 +14,3 @@
 1. Download the latest APK from the [Releases](https://github.com/brul1ka/online-steam/releases) page (if available).  
 2. Enable installation from unknown sources on your Android device.  
 3. Install the APK and run the app.
-
-## Build from Source
-
-If you want to build the APK yourself:
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/brul1ka/online-steam.git
-   cd online-steam
