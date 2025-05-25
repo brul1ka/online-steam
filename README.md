@@ -1,16 +1,56 @@
-# Online Steam Tracker APK
+# Online Steam — Check if a Game is Alive
 
-**Online Steam Tracker** is a simple Android app that shows which Steam games are currently online and being played. The app is built with Python using Kivy and packaged as an APK using Buildozer.
+Online Steam is a simple app that helps you check how many players are currently online in any Steam game.
+
+Originally started as an Android app, the project has shifted towards a desktop-first direction using the Textual framework (Python).
+
+---
 
 ## Features
 
-- Displays real-time online player counts for popular Steam games  
-- Clean and minimalistic user interface designed for mobile devices  
-- Built with Python 3.10 and Kivy framework  
-- Easy to install on Android devices as APK  
+- Search for any Steam game by name
+- Get the correct AppID and current live player count
+- Runs locally, no login required
+- EXE build for easy use on Windows
 
-## Installation
+---
 
-1. Download the latest APK from the [Releases](https://github.com/brul1ka/online-steam/releases) page (if available).  
-2. Enable installation from unknown sources on your Android device.  
-3. Install the APK and run the app.
+## Why this app?
+
+SteamDB provides this info, but it's not always fast or user-friendly.  
+Online Steam simplifies that: type the game name, get the result immediately — without digging through a website.
+
+This tool is useful for checking if a game is active before launching or buying it.
+
+---
+
+## Tech Stack
+
+- Python
+- Textual (for terminal-based UI)
+- SteamDB and Steam API for data
+
+---
+
+## Current Status
+
+- EXE version is in early development (v0.5)
+- Android version is paused for now
+- Active work in progress
+
+---
+
+## Roadmap
+
+- Add fuzzy search
+- Improve error handling
+- Add filters (genre, player count, etc.)
+- Add bookmarks or favorites
+- Consider bringing back Android version later
+
+---
+
+## Contributing
+
+Feedback and suggestions are welcome.  
+Open an issue or a pull request.
