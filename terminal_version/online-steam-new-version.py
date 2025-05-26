@@ -8,26 +8,34 @@ import asyncio
 
 class OnlineSteam(App):
     CSS = """
-        #output {
-            padding: 1;
+        #game_input {
+            border: wide round #983bbb;
+            background: black;
         }
+
         #loading {
             dock: bottom;
             align: center bottom;
             padding: 1;
             color: yellow;
         }
+
+        #lists_and_output {
+            layout: horizontal;
+            height: 20;
+            margin: 1;
+        }
+
         #assumed_game_list {
-            width: 40;
-            height: 24;
-            dock: right;
-            margin: 2 4;
+            width: 60;
             border: round #b55dd6;
             padding: 1;
         }
-        #game_input {
-            border: wide round #983bbb;
-            background: black;
+
+        #output {
+            border: round #9902d1;
+            padding: 1;
+            width: 1fr;
         }
     """
 
@@ -44,17 +52,17 @@ class OnlineSteam(App):
         apps = apps_data['applist']['apps']
         return apps
 
-    def filter_games(self, query):
-        return [app for app in self.apps if query.lower() in app['name'].lower()]
-
     def compose(self):
         yield Input(placeholder='Enter a game name...', id='game_input')
-        yield Static('', id='output')
         yield Static("", id='loading')
-        assumed_game_list = ListView(id='assumed_game_list')
-        assumed_game_list.border_title = 'Assumed'
-        assumed_game_list.border_subtitle = 'min. 3 symbols'
-        yield assumed_game_list
+        with Container(id="lists_and_output"):
+            filter_list_widget = ListView(id='assumed_game_list')
+            filter_list_widget.border_title = 'Assumed'
+            filter_list_widget.border_subtitle = 'min. 3 symbols'
+            yield filter_list_widget
+            output_static_widget = Static('', id='output')
+            output_static_widget.border_title = 'output'
+            yield output_static_widget
 
     async def on_mount(self):
         loading_widget = self.query_one("#loading", Static)
@@ -67,20 +75,18 @@ class OnlineSteam(App):
     async def on_game_input_submitted(self, event: Input.Submitted):
         output = self.query_one("#output", Static)
         user_game = event.value
-        filtered_games = self.filter_games(user_game)
-        filtered_games_list = self.query_one('#assumed_game_list')
-        filtered_games_list.clear()
         appid = self.find_appid(self.apps, user_game)
 
         if appid is None:
             output.update(f'There is no such game with name: {user_game}.')
+            return
 
         try:
             url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={appid}"
             response = await asyncio.to_thread(requests.get, url)
             data = response.json()
             player_count = data['response'].get('player_count')
-            if appid and player_count is not None:
+            if player_count is not None:
                 output.update(f'{user_game} — {player_count} players online!')
         except Exception as e:
             output.update(f'Unexpected error: {e}')
@@ -92,11 +98,26 @@ class OnlineSteam(App):
             filtered = [app for app in self.apps if query.lower() in app['name'].lower()]
             self.filtered_games_list.clear()
             for app in filtered[:20]:
-                self.filtered_games_list.append(ListItem(Label(app['name'])))
+                self.filtered_games_list.append(ListItem(Label(app['name'], markup=False)))
             if not filtered:
                 self.filtered_games_list.append(ListItem(Label('No suggested games')))
         else:
             self.filtered_games_list.clear()
+
+    @on(ListView.Selected)
+    async def on_filtered_game_selected(self, event: ListView.Selected):
+        if event.list_view.id != 'assumed_game_list':
+            return
+
+        selected_item = event.item
+        selected_label = selected_item.query_one(Label)
+        selected_game_name = selected_label.renderable
+
+        game_input = self.query_one('#game_input', Input)
+
+        submit_event = Input.Submitted(game_input, selected_game_name)
+        await self.on_game_input_submitted(submit_event)
+
 
 if __name__ == '__main__':
     OnlineSteam().run()
