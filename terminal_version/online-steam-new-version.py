@@ -1,5 +1,5 @@
 from textual.app import App
-from textual.widgets import Static, Input
+from textual.widgets import Static, Input, ListView, ListItem, Label
 from textual.containers import Container
 from textual import on
 import requests
@@ -15,8 +15,20 @@ class MyApp(App):
             dock: bottom;
             align: center bottom;
             padding: 1;
+            color: yellow;
         }
-
+        #assumed_game_list {
+            width: 40;
+            height: 24;
+            dock: right;
+            margin: 2 4;
+            border: round #b55dd6;
+            padding: 1;
+        }
+        #game_input {
+            border: wide round #983bbb;
+            background: black;
+        }
     """
 
     def find_appid(self, apps, name):
@@ -32,28 +44,41 @@ class MyApp(App):
         apps = apps_data['applist']['apps']
         return apps
 
+    def filter_games(self, query):
+        return [app for app in self.apps if query.lower() in app['name'].lower()]
+
     def compose(self):
         yield Input(placeholder='Enter a game name...', id='game_input')
         yield Static('', id='output')
         yield Static("", id='loading')
+        assumed_game_list = ListView(id='assumed_game_list')
+        assumed_game_list.border_title = 'Assumed'
+        yield assumed_game_list
 
     async def on_mount(self):
         loading_widget = self.query_one("#loading", Static)
         loading_widget.update("Loading list of games...")
         self.apps = await asyncio.to_thread(self.get_games_list)
-        loading_widget.update("Game list loaded successfully.")
+        loading_widget.update(f"Loaded {len(self.apps)} games successfully.")
 
     @on(Input.Submitted)
     async def on_game_input_submitted(self, event: Input.Submitted):
         output = self.query_one("#output", Static)
         user_game = event.value
+        filtered_games = self.filter_games(user_game)
+        filtered_games_list = self.query_one('#assumed_game_list')
+        filtered_games_list.clear()
         appid = self.find_appid(self.apps, user_game)
 
         if appid is None:
-            output.update('There is no such game.')
-            return
+            output.update(f'There is no such game with name: {user_game}.')
 
         try:
+            for app in filtered_games[:20:]:
+                filtered_games_list.append(ListItem(Label(app['name'])))
+            if not filtered_games:
+                filtered_games_list.append(ListItem(Label('No suggested games')))
+
             url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={appid}"
             response = await asyncio.to_thread(requests.get, url)
             data = response.json()
