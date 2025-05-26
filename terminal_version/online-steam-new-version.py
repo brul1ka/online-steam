@@ -6,7 +6,7 @@ import requests
 import asyncio
 
 
-class MyApp(App):
+class OnlineSteam(App):
     CSS = """
         #output {
             padding: 1;
@@ -53,6 +53,7 @@ class MyApp(App):
         yield Static("", id='loading')
         assumed_game_list = ListView(id='assumed_game_list')
         assumed_game_list.border_title = 'Assumed'
+        assumed_game_list.border_subtitle = 'min. 3 symbols'
         yield assumed_game_list
 
     async def on_mount(self):
@@ -60,6 +61,7 @@ class MyApp(App):
         loading_widget.update("Loading list of games...")
         self.apps = await asyncio.to_thread(self.get_games_list)
         loading_widget.update(f"Loaded {len(self.apps)} games successfully.")
+        self.filtered_games_list = self.query_one('#assumed_game_list')
 
     @on(Input.Submitted)
     async def on_game_input_submitted(self, event: Input.Submitted):
@@ -74,11 +76,6 @@ class MyApp(App):
             output.update(f'There is no such game with name: {user_game}.')
 
         try:
-            for app in filtered_games[:20:]:
-                filtered_games_list.append(ListItem(Label(app['name'])))
-            if not filtered_games:
-                filtered_games_list.append(ListItem(Label('No suggested games')))
-
             url = f"https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={appid}"
             response = await asyncio.to_thread(requests.get, url)
             data = response.json()
@@ -88,4 +85,18 @@ class MyApp(App):
         except Exception as e:
             output.update(f'Unexpected error: {e}')
 
-MyApp().run()
+    @on(Input.Changed)
+    async def filter(self, event: Input.Changed):
+        query = event.value
+        if len(query) >= 3:
+            filtered = [app for app in self.apps if query.lower() in app['name'].lower()]
+            self.filtered_games_list.clear()
+            for app in filtered[:20]:
+                self.filtered_games_list.append(ListItem(Label(app['name'])))
+            if not filtered:
+                self.filtered_games_list.append(ListItem(Label('No suggested games')))
+        else:
+            self.filtered_games_list.clear()
+
+if __name__ == '__main__':
+    OnlineSteam().run()
