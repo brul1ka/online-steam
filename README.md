@@ -34,7 +34,7 @@ This tool is useful for checking if a game is active before launching or buying 
 
 ## Current Status
 
-- EXE version is in early development (v0.5)
+- EXE version is in early development
 - Android version is paused for now
 - Active work in progress
 
@@ -44,9 +44,9 @@ This tool is useful for checking if a game is active before launching or buying 
 
 - Add fuzzy search
 - Improve error handling
-- Add filters (genre, player count, etc.)
-- Add bookmarks or favorites
-- Consider bringing back Android version later
+- In search only games and DLCs
+- Add favorites
+- Consider bringing back Android version later (unlikely)
 
 ---
 
