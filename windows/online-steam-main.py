@@ -7,8 +7,9 @@ import asyncio
 
 
 class OnlineSteam(App):
+
     current_page = 0
-    page_size = 12
+    page_size = 10
 
     CSS = """
         #game_input {
@@ -25,26 +26,36 @@ class OnlineSteam(App):
 
         #lists_and_output {
             layout: horizontal;
-            height: auto;
+            height: 20;
             margin: 1;
         }
 
         #left_panel {
             layout: vertical;
-            width: 60;
+            width: 50;
             margin-right: 1;
         }
 
         #assumed_game_list {
             border: round #b55dd6;
             padding: 1;
-            height: 16;
+            height: 14;
         }
 
-        #next_page_btn {
+        #pagination_buttons {
+            layout: horizontal;
             margin-top: 1;
             width: 100%;
             height: 3;
+        }
+
+        #prvs_page_btn {
+            width: 1fr;
+            margin-right: 1;
+        }
+
+        #next_page_btn {
+            width: 1fr;
         }
 
         #right_panel {
@@ -55,13 +66,13 @@ class OnlineSteam(App):
         #output {
             border: round #9902d1;
             padding: 1;
-            height: 15;
+            height: 7;
         }
 
         #favorites {
             border: round #55aaff;
             padding: 1;
-            height: 8;
+            height: 10;
             margin-top: 1;
         }
     """
@@ -80,8 +91,10 @@ class OnlineSteam(App):
         return apps
 
     def show_page(self):
-        button = self.query_one('#next_page_btn')
-        button.disabled = False
+        next_page_btn = self.query_one('#next_page_btn')
+        prvs_page_btn = self.query_one('#prvs_page_btn')
+        next_page_btn.disabled = False
+        prvs_page_btn.disabled = True
         start = self.current_page * self.page_size
         end = start + self.page_size
         self.filtered_games_list.clear()
@@ -91,7 +104,9 @@ class OnlineSteam(App):
             self.filtered_games_list.append(ListItem(Label('No suggested games')))
         max_page = len(self.filtered_apps) // self.page_size
         if self.current_page >= max_page:
-            button.disabled = True
+            next_page_btn.disabled = True
+        if self.current_page >= 1:
+            prvs_page_btn.disabled = False
 
     def compose(self):
         yield Input(placeholder='Enter a game name...', id='game_input')
@@ -102,7 +117,9 @@ class OnlineSteam(App):
                 filter_list_widget.border_title = 'Assumed'
                 filter_list_widget.border_subtitle = 'min. 3 symbols'
                 yield filter_list_widget
-                yield Button('Next page', id='next_page_btn', disabled=True)
+                with Container(id="pagination_buttons"):
+                    yield Button('Previous page', id='prvs_page_btn', disabled=True)
+                    yield Button('Next page', id='next_page_btn', disabled=True)
             with Container(id="right_panel"):
                 output_static_widget = Static('', id='output')
                 output_static_widget.border_title = 'Output'
@@ -165,11 +182,15 @@ class OnlineSteam(App):
         await self.on_game_input_submitted(submit_event)
 
     @on(Button.Pressed)
-    async def next_page(self, event: Button.Pressed):
+    async def on_page_button_pressed(self, event: Button.Pressed):
         if event.button.id == 'next_page_btn':
             max_page = len(self.filtered_apps) // self.page_size
             if self.current_page < max_page:
                 self.current_page += 1
+                self.show_page()
+        elif event.button.id == 'prvs_page_btn':
+            if self.current_page > 0:
+                self.current_page -= 1
                 self.show_page()
 
 
